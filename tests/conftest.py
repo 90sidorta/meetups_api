@@ -9,11 +9,11 @@ from app.authentication import create_access_token
 from app.config import settings
 from app.database import get_db
 from app.main import app
-from app import models 
+from app import models
 from app.database import Base
 
 
-DB_URL = f'postgresql://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}/{settings.DB_NAME}'
+DB_URL = f"postgresql://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}/{settings.DB_NAME}"
 
 engine_new = create_engine(DB_URL)
 
@@ -39,6 +39,7 @@ def client(session):
             yield session
         finally:
             session.close()
+
     app.dependency_overrides[get_db] = get_test_db
     yield TestClient(app)
 
@@ -57,10 +58,7 @@ def test_token(test_user):
 
 @pytest.fixture
 def authorized_client(client, test_token):
-    client.headers = {
-        **client.headers,
-        "Authorization": f"Bearer {test_token}"
-    }
+    client.headers = {**client.headers, "Authorization": f"Bearer {test_token}"}
     return client
 
 
