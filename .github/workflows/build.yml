@@ -1,0 +1,60 @@
+name: Build and test app
+
+on:
+  pull_request:
+    branches:
+      - "main"
+  push:
+    branches:
+      - "main"
+
+jobs:
+  first:
+    env:
+      DB_USER: admin
+      DB_NAME: meetup_db
+      DB_PASS: testtest2
+      DB_HOST: localhost
+      SECRET_KEY: testtest2
+      ALGORITHM: HS256
+      EXPIRE_MINUTES: 60
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:13.1
+        env:
+          POSTGRES_DB: meetup_db_test
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: testtest2
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Update pip
+        run: python -m pip install --upgrade pip
+      - name: Install pipenv
+        run: pip install pipenv
+      - name: Install required libs
+        run: pip install -r requirements.txt
+      - name: Test
+        run: |
+          pip install pytest
+          pytest
+        env:
+          DB_USER: admin
+          DB_NAME: meetup_db_test
+          DB_PASS: testtest2
+          DB_HOST: localhost
+          SECRET_KEY: testtest2
+          ALGORITHM: HS256
+          EXPIRE_MINUTES: 60
+

@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    depends_on:
+      - postgres
+    links:
+      - postgres:db_postgres
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/usr/src/app:ro
+    env_file:
+      - ./.env
+  postgres:
+    image: postgres:13.1
+    restart: always
+    environment:
+      - POSTGRES_DB=meetup_db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=testtest2
+    ports:
+      - 5432:5432
+    volumes:
+      - "./pg/data:/var/lib/postgresql/data"
+      - "./pg/init:/docker-entrypoint-initdb.d"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
